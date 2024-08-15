@@ -1,7 +1,6 @@
 use array_const_fn_init::array_const_fn_init;
 use const_crypto::ed25519;
 use solana_program::{pubkey, pubkey::Pubkey};
-use rand::Rng;
 
 /// The authority allowed to initialize the program.
 pub const INITIALIZER_ADDRESS: Pubkey = pubkey!("FqX4B7prPuZa1HjmJbWQtLH6GYYqUTT9wzWr55XQTbyE");
@@ -41,7 +40,7 @@ pub const EPOCH_DURATION: i64 = ONE_MINUTE * EPOCH_MINUTES;
 pub const MAX_SUPPLY: u64 = ONE_GEM * 21_000_000;
 
 /// The target quantity of GEM to be mined per epoch.
-pub const TARGET_EPOCH_REWARDS: u64 = ONE_GEM * EPOCH_MINUTES as u64 * rng.gen_range(1..=1000);
+pub const TARGET_EPOCH_REWARDS: u64 = ONE_GEM * EPOCH_MINUTES as u64;
 
 /// The maximum quantity of GEM that can be mined per epoch.
 /// Inflation rate ≈ 1 GEM / min (min 0, max 8)
