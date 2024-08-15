@@ -9,4 +9,4 @@ pub(crate) use gemm_utils as utils;
 
 use solana_program::declare_id;
 
-declare_id!("GemmNd98XaPYbPtfaAiM32ynMgsqotF1qRJ9mWBt2VgK");
+declare_id!("9x1a9dKgfA3kKDLwgJEhQPQK6h2AMvVjH4pEtbnYaESz");
