@@ -26,7 +26,7 @@ pub const INITIAL_MIN_DIFFICULTY: u32 = 1;
 pub const TOKEN_DECIMALS: u8 = 11;
 
 /// One GEM token, denominated in indivisible units.
-pub const GEM: u64 = 10u64.pow(TOKEN_DECIMALS as u32);
+pub const ONE_GEM: u64 = 10u64.pow(TOKEN_DECIMALS as u32);
 
 /// The duration of one minute, in seconds.
 pub const ONE_MINUTE: i64 = 60;
@@ -40,14 +40,8 @@ pub const EPOCH_DURATION: i64 = ONE_MINUTE * EPOCH_MINUTES;
 /// The maximum token supply (21 million).
 pub const MAX_SUPPLY: u64 = ONE_GEM * 21_000_000;
 
-/// Function to generate TARGET_EPOCH_REWARDS randomly.
-pub fn generate_target_epoch_rewards() -> u64 {
-    let mut rng = rand::thread_rng();
-    ONE_GEM * EPOCH_MINUTES as u64 * rng.gen_range(1..=1000)
-}
-
 /// The target quantity of GEM to be mined per epoch.
-pub const TARGET_EPOCH_REWARDS: u64 = generate_target_epoch_rewards();
+pub const TARGET_EPOCH_REWARDS: u64 = ONE_GEM * EPOCH_MINUTES as u64 * rng.gen_range(1..=1000);
 
 /// The maximum quantity of GEM that can be mined per epoch.
 /// Inflation rate ≈ 1 GEM / min (min 0, max 8)
