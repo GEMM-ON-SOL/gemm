@@ -1,9 +1,10 @@
 use array_const_fn_init::array_const_fn_init;
 use const_crypto::ed25519;
 use solana_program::{pubkey, pubkey::Pubkey};
+use rand::Rng;
 
 /// The authority allowed to initialize the program.
-pub const INITIALIZER_ADDRESS: Pubkey = pubkey!("HBUh9g46wk2X89CvaNN15UmsznP59rh6od1h8JwYAopk");
+pub const INITIALIZER_ADDRESS: Pubkey = pubkey!("FqX4B7prPuZa1HjmJbWQtLH6GYYqUTT9wzWr55XQTbyE");
 
 /// The base reward rate to intialize the program with.
 pub const INITIAL_BASE_REWARD_RATE: u64 = BASE_REWARD_RATE_MIN_THRESHOLD;
@@ -20,15 +21,12 @@ pub const TOLERANCE: i64 = 5;
 /// The minimum difficulty to initialize the program with.
 pub const INITIAL_MIN_DIFFICULTY: u32 = 1;
 
-/// The decimal precision of the ORE token.
-/// There are 100 billion indivisible units per ORE (called "grains").
+/// The decimal precision of the GEM token.
+/// There are 100 billion indivisible units per GEM (called "grains").
 pub const TOKEN_DECIMALS: u8 = 11;
 
-/// The decimal precision of the ORE v1 token.
-pub const TOKEN_DECIMALS_V1: u8 = 9;
-
-/// One ORE token, denominated in indivisible units.
-pub const ONE_ORE: u64 = 10u64.pow(TOKEN_DECIMALS as u32);
+/// One GEM token, denominated in indivisible units.
+pub const GEM: u64 = 10u64.pow(TOKEN_DECIMALS as u32);
 
 /// The duration of one minute, in seconds.
 pub const ONE_MINUTE: i64 = 60;
@@ -40,16 +38,22 @@ pub const EPOCH_MINUTES: i64 = 1;
 pub const EPOCH_DURATION: i64 = ONE_MINUTE * EPOCH_MINUTES;
 
 /// The maximum token supply (21 million).
-pub const MAX_SUPPLY: u64 = ONE_ORE * 21_000_000;
+pub const MAX_SUPPLY: u64 = ONE_GEM * 21_000_000;
 
-/// The target quantity of ORE to be mined per epoch.
-pub const TARGET_EPOCH_REWARDS: u64 = ONE_ORE * EPOCH_MINUTES as u64;
+/// Function to generate TARGET_EPOCH_REWARDS randomly.
+pub fn generate_target_epoch_rewards() -> u64 {
+    let mut rng = rand::thread_rng();
+    ONE_GEM * EPOCH_MINUTES as u64 * rng.gen_range(1..=1000)
+}
 
-/// The maximum quantity of ORE that can be mined per epoch.
-/// Inflation rate ≈ 1 ORE / min (min 0, max 8)
+/// The target quantity of GEM to be mined per epoch.
+pub const TARGET_EPOCH_REWARDS: u64 = generate_target_epoch_rewards();
+
+/// The maximum quantity of GEM that can be mined per epoch.
+/// Inflation rate ≈ 1 GEM / min (min 0, max 8)
 pub const MAX_EPOCH_REWARDS: u64 = TARGET_EPOCH_REWARDS * BUS_COUNT as u64;
 
-/// The quantity of ORE each bus is allowed to issue per epoch.
+/// The quantity of GEM each bus is allowed to issue per epoch.
 pub const BUS_EPOCH_REWARDS: u64 = MAX_EPOCH_REWARDS / BUS_COUNT as u64;
 
 /// The number of bus accounts, for parallelizing mine operations.
@@ -88,13 +92,13 @@ pub const MINT_NOISE: [u8; 16] = [
 ];
 
 /// The name for token metadata.
-pub const METADATA_NAME: &str = "ORE";
+pub const METADATA_NAME: &str = "GEMM";
 
 /// The ticker symbol for token metadata.
-pub const METADATA_SYMBOL: &str = "ORE";
+pub const METADATA_SYMBOL: &str = "GEMM";
 
 /// The uri for token metdata.
-pub const METADATA_URI: &str = "https://ore.supply/metadata-v2.json";
+pub const METADATA_URI: &str = "https://gemm.lol/metadata.json";
 
 /// Program id for const pda derivations
 const PROGRAM_ID: [u8; 32] = unsafe { *(&crate::id() as *const Pubkey as *const [u8; 32]) };
@@ -127,9 +131,6 @@ pub const METADATA_ADDRESS: Pubkey = Pubkey::new_from_array(
 /// The address of the mint account.
 pub const MINT_ADDRESS: Pubkey =
     Pubkey::new_from_array(ed25519::derive_program_address(&[MINT, &MINT_NOISE], &PROGRAM_ID).0);
-
-/// The address of the v1 mint account.
-pub const MINT_V1_ADDRESS: Pubkey = pubkey!("oreoN2tQbHXVaZsr3pf66A48miqcBXCDJozganhEJgz");
 
 /// The address of the treasury account.
 pub const TREASURY_ADDRESS: Pubkey =

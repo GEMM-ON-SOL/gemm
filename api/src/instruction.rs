@@ -15,7 +15,7 @@ use crate::{
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, TryFromPrimitive)]
 #[rustfmt::skip]
-pub enum OreInstruction {
+pub enum GemInstruction {
     // User
     Claim = 0,
     Close = 1,
@@ -24,13 +24,11 @@ pub enum OreInstruction {
     Reset = 4,
     Stake = 5,
     Update = 6,
-    Upgrade = 7,
-
     // Admin
     Initialize = 100,
 }
 
-impl OreInstruction {
+impl GemInstruction {
     pub fn to_vec(&self) -> Vec<u8> {
         vec![*self as u8]
     }
@@ -78,25 +76,17 @@ pub struct StakeArgs {
     pub amount: [u8; 8],
 }
 
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Pod, Zeroable)]
-pub struct UpgradeArgs {
-    pub amount: [u8; 8],
-}
-
 impl_to_bytes!(InitializeArgs);
 impl_to_bytes!(OpenArgs);
 impl_to_bytes!(MineArgs);
 impl_to_bytes!(ClaimArgs);
 impl_to_bytes!(StakeArgs);
-impl_to_bytes!(UpgradeArgs);
 
 impl_instruction_from_bytes!(InitializeArgs);
 impl_instruction_from_bytes!(OpenArgs);
 impl_instruction_from_bytes!(MineArgs);
 impl_instruction_from_bytes!(ClaimArgs);
 impl_instruction_from_bytes!(StakeArgs);
-impl_instruction_from_bytes!(UpgradeArgs);
 
 /// Builds an auth instruction.
 pub fn auth(proof: Pubkey) -> Instruction {
@@ -125,7 +115,7 @@ pub fn claim(signer: Pubkey, beneficiary: Pubkey, amount: u64) -> Instruction {
             AccountMeta::new_readonly(spl_token::id(), false),
         ],
         data: [
-            OreInstruction::Claim.to_vec(),
+            GemInstruction::Claim.to_vec(),
             ClaimArgs {
                 amount: amount.to_le_bytes(),
             }
@@ -146,7 +136,7 @@ pub fn close(signer: Pubkey) -> Instruction {
             AccountMeta::new(proof_pda.0, false),
             AccountMeta::new_readonly(solana_program::system_program::id(), false),
         ],
-        data: OreInstruction::Close.to_vec(),
+        data: GemInstruction::Close.to_vec(),
     }
 }
 
@@ -169,7 +159,7 @@ pub fn mine(
             AccountMeta::new_readonly(sysvar::slot_hashes::id(), false),
         ],
         data: [
-            OreInstruction::Mine.to_vec(),
+            GemInstruction::Mine.to_vec(),
             MineArgs {
                 digest: solution.d,
                 nonce: solution.n,
@@ -195,7 +185,7 @@ pub fn open(signer: Pubkey, miner: Pubkey, payer: Pubkey) -> Instruction {
             AccountMeta::new_readonly(sysvar::slot_hashes::id(), false),
         ],
         data: [
-            OreInstruction::Open.to_vec(),
+            GemInstruction::Open.to_vec(),
             OpenArgs { bump: proof_pda.1 }.to_bytes().to_vec(),
         ]
         .concat(),
@@ -226,7 +216,7 @@ pub fn reset(signer: Pubkey) -> Instruction {
             AccountMeta::new(treasury_tokens, false),
             AccountMeta::new_readonly(spl_token::id(), false),
         ],
-        data: OreInstruction::Reset.to_vec(),
+        data: GemInstruction::Reset.to_vec(),
     }
 }
 
@@ -247,7 +237,7 @@ pub fn stake(signer: Pubkey, sender: Pubkey, amount: u64) -> Instruction {
             AccountMeta::new_readonly(spl_token::id(), false),
         ],
         data: [
-            OreInstruction::Stake.to_vec(),
+            GemInstruction::Stake.to_vec(),
             StakeArgs {
                 amount: amount.to_le_bytes(),
             }
@@ -268,32 +258,7 @@ pub fn update(signer: Pubkey, miner: Pubkey) -> Instruction {
             AccountMeta::new_readonly(miner, false),
             AccountMeta::new(proof, false),
         ],
-        data: OreInstruction::Update.to_vec(),
-    }
-}
-
-// Build an upgrade instruction.
-pub fn upgrade(signer: Pubkey, beneficiary: Pubkey, sender: Pubkey, amount: u64) -> Instruction {
-    Instruction {
-        program_id: crate::id(),
-        accounts: vec![
-            AccountMeta::new(signer, true),
-            AccountMeta::new(beneficiary, false),
-            AccountMeta::new(MINT_ADDRESS, false),
-            AccountMeta::new(MINT_V1_ADDRESS, false),
-            AccountMeta::new(sender, false),
-            AccountMeta::new(TREASURY_ADDRESS, false),
-            AccountMeta::new_readonly(spl_token::id(), false),
-        ],
-        data: [
-            OreInstruction::Upgrade.to_vec(),
-            UpgradeArgs {
-                amount: amount.to_le_bytes(),
-            }
-            .to_bytes()
-            .to_vec(),
-        ]
-        .concat(),
+        data: GemInstruction::Update.to_vec(),
     }
 }
 
@@ -346,7 +311,7 @@ pub fn initialize(signer: Pubkey) -> Instruction {
             AccountMeta::new_readonly(sysvar::rent::id(), false),
         ],
         data: [
-            OreInstruction::Initialize.to_vec(),
+            GemInstruction::Initialize.to_vec(),
             InitializeArgs {
                 bus_0_bump: bus_pdas[0].1,
                 bus_1_bump: bus_pdas[1].1,

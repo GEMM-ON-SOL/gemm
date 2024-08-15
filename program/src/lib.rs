@@ -6,7 +6,6 @@ mod open;
 mod reset;
 mod stake;
 mod update;
-mod upgrade;
 
 use claim::*;
 use close::*;
@@ -16,15 +15,14 @@ use open::*;
 use reset::*;
 use stake::*;
 use update::*;
-use upgrade::*;
 
-use ore_api::instruction::*;
+use gemm_api::instruction::*;
 use solana_program::{
     self, account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
     pubkey::Pubkey,
 };
 
-pub(crate) use ore_utils as utils;
+pub(crate) use gemm_utils as utils;
 
 #[cfg(not(feature = "no-entrypoint"))]
 solana_program::entrypoint!(process_instruction);
@@ -34,24 +32,25 @@ pub fn process_instruction(
     accounts: &[AccountInfo],
     data: &[u8],
 ) -> ProgramResult {
-    if program_id.ne(&ore_api::id()) {
+    if program_id.ne(&gemm_api::id()) {
+        println!("Program ID mismatch");
         return Err(ProgramError::IncorrectProgramId);
     }
 
     let (tag, data) = data
         .split_first()
         .ok_or(ProgramError::InvalidInstructionData)?;
+    println!("Validated instruction data");
 
-    match OreInstruction::try_from(*tag).or(Err(ProgramError::InvalidInstructionData))? {
-        OreInstruction::Claim => process_claim(accounts, data)?,
-        OreInstruction::Close => process_close(accounts, data)?,
-        OreInstruction::Mine => process_mine(accounts, data)?,
-        OreInstruction::Open => process_open(accounts, data)?,
-        OreInstruction::Reset => process_reset(accounts, data)?,
-        OreInstruction::Stake => process_stake(accounts, data)?,
-        OreInstruction::Update => process_update(accounts, data)?,
-        OreInstruction::Upgrade => process_upgrade(accounts, data)?,
-        OreInstruction::Initialize => process_initialize(accounts, data)?,
+    match GemInstruction::try_from(*tag).or(Err(ProgramError::InvalidInstructionData))? {
+        GemInstruction::Claim => process_claim(accounts, data)?,
+        GemInstruction::Close => process_close(accounts, data)?,
+        GemInstruction::Mine => process_mine(accounts, data)?,
+        GemInstruction::Open => process_open(accounts, data)?,
+        GemInstruction::Reset => process_reset(accounts, data)?,
+        GemInstruction::Stake => process_stake(accounts, data)?,
+        GemInstruction::Update => process_update(accounts, data)?,
+        GemInstruction::Initialize => process_initialize(accounts, data)?,
     }
 
     Ok(())

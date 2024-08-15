@@ -1,12 +1,12 @@
-use ore_api::{consts::*, error::OreError, instruction::ClaimArgs, loaders::*, state::Proof};
-use ore_utils::spl::transfer_signed;
+use gemm_api::{consts::*, error::GemError, instruction::ClaimArgs, loaders::*, state::Proof};
+use gemm_utils::spl::transfer_signed;
 use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
 };
 
 use crate::utils::AccountDeserialize;
 
-/// Claim distributes claimable ORE from the treasury to a miner.
+/// Claim distributes claimable GEM from the treasury to a miner.
 pub fn process_claim<'a, 'info>(accounts: &'a [AccountInfo<'info>], data: &[u8]) -> ProgramResult {
     // Parse args.
     let args = ClaimArgs::try_from_bytes(data)?;
@@ -31,7 +31,7 @@ pub fn process_claim<'a, 'info>(accounts: &'a [AccountInfo<'info>], data: &[u8])
     proof.balance = proof
         .balance
         .checked_sub(amount)
-        .ok_or(OreError::ClaimTooLarge)?;
+        .ok_or(GemError::ClaimTooLarge)?;
 
     // Transfer tokens from treasury to beneficiary.
     transfer_signed(

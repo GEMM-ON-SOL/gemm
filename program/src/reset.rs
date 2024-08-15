@@ -1,6 +1,6 @@
-use ore_api::{
+use gemm_api::{
     consts::*,
-    error::OreError,
+    error::GemError,
     loaders::*,
     state::{Bus, Config},
 };
@@ -12,7 +12,7 @@ use spl_token::state::Mint;
 
 use crate::utils::AccountDeserialize;
 
-/// Reset tops up the bus balances, updates the base reward rate, and sets up the ORE program for the next epoch.
+/// Reset tops up the bus balances, updates the base reward rate, and sets up the GEM program for the next epoch.
 pub fn process_reset<'a, 'info>(accounts: &'a [AccountInfo<'info>], _data: &[u8]) -> ProgramResult {
     // Load accounts.
     let [signer, bus_0_info, bus_1_info, bus_2_info, bus_3_info, bus_4_info, bus_5_info, bus_6_info, bus_7_info, config_info, mint_info, treasury_info, treasury_tokens_info, token_program] =
@@ -102,7 +102,7 @@ pub fn process_reset<'a, 'info>(accounts: &'a [AccountInfo<'info>], _data: &[u8]
     // Max supply check.
     let mint = Mint::unpack(&mint_info.data.borrow()).expect("Failed to parse mint");
     if mint.supply.ge(&MAX_SUPPLY) {
-        return Err(OreError::MaxSupply.into());
+        return Err(GemError::MaxSupply.into());
     }
 
     // Fund the treasury token account.
@@ -164,7 +164,7 @@ mod tests {
     use rand::{distributions::Uniform, Rng};
 
     use crate::calculate_new_reward_rate;
-    use ore_api::consts::{
+    use gemm_api::consts::{
         BASE_REWARD_RATE_MIN_THRESHOLD, BUS_EPOCH_REWARDS, MAX_EPOCH_REWARDS, SMOOTHING_FACTOR,
         TARGET_EPOCH_REWARDS,
     };

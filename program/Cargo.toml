@@ -1,6 +1,6 @@
 [package]
-name = "ore-program"
-description = "ORE is a proof-of-work token everyone can mine"
+name = "gemm-program"
+description = "GEMM is a proof-of-work token based on ORE."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -12,7 +12,7 @@ keywords.workspace = true
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "ore"
+name = "gemm"
 
 [features]
 no-entrypoint = []
@@ -21,8 +21,8 @@ default = []
 [dependencies]
 drillx.workspace = true
 mpl-token-metadata.workspace = true
-ore-api.workspace = true
-ore-utils.workspace = true
+gemm-api.workspace = true
+gemm-utils.workspace = true
 solana-program.workspace = true
 spl-token.workspace = true
 spl-associated-token-account.workspace = true

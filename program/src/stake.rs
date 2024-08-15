@@ -1,5 +1,5 @@
-use ore_api::{consts::*, instruction::StakeArgs, loaders::*, state::Proof};
-use ore_utils::spl::transfer;
+use gemm_api::{consts::*, instruction::StakeArgs, loaders::*, state::Proof};
+use gemm_utils::spl::transfer;
 use solana_program::{
     account_info::AccountInfo, clock::Clock, entrypoint::ProgramResult,
     program_error::ProgramError, sysvar::Sysvar,
@@ -7,7 +7,7 @@ use solana_program::{
 
 use crate::utils::AccountDeserialize;
 
-/// Stake deposits ORE into a proof account to earn multiplier.
+/// Stake deposits GEM into a proof account to earn multiplier.
 pub fn process_stake<'a, 'info>(accounts: &'a [AccountInfo<'info>], data: &[u8]) -> ProgramResult {
     // Parse args.
     let args = StakeArgs::try_from_bytes(data)?;

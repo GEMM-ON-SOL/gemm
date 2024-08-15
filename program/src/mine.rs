@@ -1,9 +1,9 @@
 use std::mem::size_of;
 
 use drillx::Solution;
-use ore_api::{
+use gemm_api::{
     consts::*,
-    error::OreError,
+    error::GemError,
     event::MineEvent,
     instruction::MineArgs,
     loaders::*,
@@ -59,7 +59,7 @@ pub fn process_mine<'a, 'info>(accounts: &'a [AccountInfo<'info>], data: &[u8]) 
         .saturating_add(EPOCH_DURATION)
         .le(&clock.unix_timestamp)
     {
-        return Err(OreError::NeedsReset.into());
+        return Err(GemError::NeedsReset.into());
     }
 
     // Validate the hash digest.
@@ -70,7 +70,7 @@ pub fn process_mine<'a, 'info>(accounts: &'a [AccountInfo<'info>], data: &[u8]) 
     let proof = Proof::try_from_bytes_mut(&mut proof_data)?;
     let solution = Solution::new(args.digest, args.nonce);
     if !solution.is_valid(&proof.challenge) {
-        return Err(OreError::HashInvalid.into());
+        return Err(GemError::HashInvalid.into());
     }
 
     // Reject spam transactions.
@@ -81,7 +81,7 @@ pub fn process_mine<'a, 'info>(accounts: &'a [AccountInfo<'info>], data: &[u8]) 
     let t_target = proof.last_hash_at.saturating_add(ONE_MINUTE);
     let t_spam = t_target.saturating_sub(TOLERANCE);
     if t.lt(&t_spam) {
-        return Err(OreError::Spam.into());
+        return Err(GemError::Spam.into());
     }
 
     // Validate the hash satisfies the minimum difficulty.
@@ -91,7 +91,7 @@ pub fn process_mine<'a, 'info>(accounts: &'a [AccountInfo<'info>], data: &[u8]) 
     let hash = solution.to_hash();
     let difficulty = hash.difficulty();
     if difficulty.lt(&(config.min_difficulty as u32)) {
-        return Err(OreError::HashTooEasy.into());
+        return Err(GemError::HashTooEasy.into());
     }
 
     // Normalize the difficulty and calculate the reward amount.
@@ -160,7 +160,7 @@ pub fn process_mine<'a, 'info>(accounts: &'a [AccountInfo<'info>], data: &[u8]) 
 
     // Limit payout amount to whatever is left in the bus.
     //
-    // Busses are limited to distributing 1 ORE per epoch. This is the maximum amount a miner can earn
+    // Busses are limited to distributing 1 GEM per epoch. This is the maximum amount a miner can earn
     // for any given hash.
     let reward_actual = reward.min(bus.rewards);
 
@@ -218,10 +218,10 @@ pub fn process_mine<'a, 'info>(accounts: &'a [AccountInfo<'info>], data: &[u8]) 
 fn authenticate(data: &[u8], proof_address: &Pubkey) -> ProgramResult {
     if let Ok(Some(auth_address)) = parse_auth_address(data) {
         if proof_address.ne(&auth_address) {
-            return Err(OreError::AuthFailed.into());
+            return Err(GemError::AuthFailed.into());
         }
     } else {
-        return Err(OreError::AuthFailed.into());
+        return Err(GemError::AuthFailed.into());
     }
     Ok(())
 }

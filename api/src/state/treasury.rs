@@ -4,7 +4,7 @@ use crate::utils::{impl_account_from_bytes, impl_to_bytes, Discriminator};
 
 use super::AccountDiscriminator;
 
-/// Treasury is a singleton account which is the mint authority for the ORE token and the authority of
+/// Treasury is a singleton account which is the mint authority for the GEM token and the authority of
 /// the program's global token account.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq, Pod, Zeroable)]
