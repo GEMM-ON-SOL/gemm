@@ -1,6 +1,6 @@
 # GEMM
 
-**GEMM is a proof-of-work token based on ORE.**
+**GEMM is a  truly accelerated proof-of-work token based on ORE.**
 
 
 ## API
