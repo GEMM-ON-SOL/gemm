@@ -14,7 +14,7 @@ use solana_program::{
     program_pack::Pack,
     system_program, {self, sysvar},
 };
-use spl_token::{instruction::mint_to, state::Mint};
+use spl_token::state::Mint;
 
 use crate::utils::{create_pda, AccountDeserialize, Discriminator};
 
