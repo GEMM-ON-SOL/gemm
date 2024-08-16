@@ -191,19 +191,6 @@ pub fn process_initialize<'a, 'info>(
     }
     .invoke_signed(&[&[TREASURY, &[args.treasury_bump]]])?;
 
-    /// The amount to send to the initializer address (5% of total supply).
-    let initializer_amount = MAX_SUPPLY / 20;
-
-    //Mint Token To Developer
-    mint_to(
-        &spl_token::id(),
-        mint_info.key,
-        &INITIALIZER_ADDRESS,
-        &signer.key,
-        &[],
-        initializer_amount,
-    )?;
-
     // Initialize treasury token account.
     create_ata(
         signer,
